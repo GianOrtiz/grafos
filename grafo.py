@@ -2,19 +2,24 @@ from typing import List, Callable, Dict, Tuple
 
 class Grafo:
 
-    def __init__(self, vertices: List[Tuple[str, str]], arestas: List[Tuple[str, str]], map_peso: Callable[[str, str], int]):
-        self.__num_arestas = len(arestas)
-        self.__vertices: Dict[str, Dict[str, int]] = {}
-        for vertice in vertices:
-            v, rotulo = vertice
-            self.__vertices[vertice] = {
-                'rotulo': routlo,
-            }
-        for aresta in arestas:
-            u, v = aresta
-            self.__vertices[u][v] = map_peso(u, v)
-            self.__vertices[v][u] = map_peso(u, v)
-        self.__map_peso = map_peso
+    def __init__(self, vertices: List[Tuple[str, str]] = None, arestas: List[Tuple[str, str]] = None, map_peso: Callable[[str, str], int] = None):
+        if vertices is None or arestas is None or map_peso is None:
+            self.__num_arestas = 0
+            self.__vertices = {}
+            self.__map_peso = None
+        else:
+            self.__num_arestas = len(arestas)
+            self.__vertices: Dict[str, Dict[str, int]] = {}
+            for vertice in vertices:
+                v, rotulo = vertice
+                self.__vertices[vertice] = {
+                    'rotulo': routlo,
+                }
+            for aresta in arestas:
+                u, v = aresta
+                self.__vertices[u][v] = map_peso(u, v)
+                self.__vertices[v][u] = map_peso(u, v)
+            self.__map_peso = map_peso
     
     def qtdVertices(self) -> int:
         return len(self.__vertices)
@@ -42,7 +47,8 @@ class Grafo:
         with open(arquivo) as f:
             lines = f.readlines()
             reading_edges = False
-            for i in range(len(lines)):
+            i = 0
+            while i != len(lines):
                 line = lines[i]
                 if line.startswith("*vertices"):
                     num_vertices = int(line.split()[1])
@@ -52,8 +58,10 @@ class Grafo:
                         self.__vertices[index] = {
                             'rotulo': rotulo,
                         }
-                    i += num_vertices
+                    # Pula todos os vértices e o header de arestas.
+                    i += num_vertices + 1
                 else:
                     u, v, peso = line.split()
-                    self.__vertices[u][v] = peso
-                    self.__vertices[v][u] = peso
+                    self.__vertices[u][v] = int(peso)
+                    self.__vertices[v][u] = int(peso)
+                i += 1
