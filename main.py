@@ -18,6 +18,9 @@ def main():
     _, filename, index = args
     grafo = Grafo()
     grafo.ler(filename)
+    levels = grafo.busca_em_largura(index)
+    for level, indexes in levels.items():
+        print(str(level) + ': ' + ','.join(indexes))
 
 if __name__ == '__main__':
     main()

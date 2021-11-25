@@ -13,7 +13,7 @@ class Grafo:
             for vertice in vertices:
                 v, rotulo = vertice
                 self.__vertices[vertice] = {
-                    'rotulo': routlo,
+                    'rotulo': rotulo,
                 }
             for aresta in arestas:
                 u, v = aresta
@@ -65,3 +65,34 @@ class Grafo:
                     self.__vertices[u][v] = int(peso)
                     self.__vertices[v][u] = int(peso)
                 i += 1
+
+    def busca_em_largura(self, index: str):
+        # Marca vértices como não visitados.
+        vertices = {}
+        for key in self.__vertices.keys():
+            vertices[key] = False
+        
+        level = 0
+        levels = {
+            level: [index],
+        }
+        level += 1
+        vertice_atual = self.__vertices[index]
+        vertices[index] = True
+        vertices_a_visitar = vertice_atual.keys()
+        while len(vertices_a_visitar) > 1:
+            novos_vertices_a_visitar = []
+            for key in vertices_a_visitar:
+                if key != 'rotulo':
+                    if not vertices[key]:
+                        vertices[key] = True
+                        if levels.get(level) is None:
+                            levels[level] = [key]
+                        else:
+                            levels[level].append(key)
+                        for child in self.__vertices[key].keys():
+                            if vertices.get(child) is not None and vertices.get(child) is False:
+                                novos_vertices_a_visitar.append(child)
+            vertices_a_visitar = novos_vertices_a_visitar
+            level += 1
+        return levels
