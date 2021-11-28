@@ -16,7 +16,7 @@ def main():
         exit(1)
 
     _, filename, index = args
-    grafo = Grafo()
+    grafo = Grafo([], [])
     grafo.ler(filename)
     levels = grafo.busca_em_largura(index)
     for level, indexes in levels.items():
