@@ -4,7 +4,7 @@ class Vertice:
         self._index = index
         self._rotulo = rotulo
         self._arestas = {}
-        for aresta in self._arestas:
+        for aresta in arestas:
             self._arestas[aresta.v] = aresta
     
     @property
