@@ -5,7 +5,10 @@ class Vertice:
         self._rotulo = rotulo
         self._arestas = {}
         for aresta in arestas:
-            self._arestas[aresta.v] = aresta
+            if aresta.v is not index:
+                self._arestas[aresta.v] = aresta
+            else:
+                self._arestas[aresta.u] = aresta
     
     @property
     def index(self):

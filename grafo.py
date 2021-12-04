@@ -16,10 +16,10 @@ class Grafo:
         for vertice in vertices:
             index, rotulo = vertice
             arestas_do_vertice = []
-            for aresta in arestas:
-                if aresta[0] == index or aresta[1] == index:
+            for aresta in self._arestas:
+                if aresta.u == index or aresta.v == index:
                     arestas_do_vertice.append(aresta)
-            
+
             self._vertices[index] = Vertice(index, rotulo, arestas_do_vertice)
 
     @property
@@ -144,3 +144,85 @@ class Grafo:
                 return (False, None, None)
         
         return (True, D, A)
+
+    def ciclo_euleriano(self):
+        C = {}
+        for aresta in self._arestas:
+            C[(aresta.u, aresta.v)] = False
+            C[(aresta.v, aresta.u)] = False
+            print(aresta.v, aresta.u)
+        v = None
+        for _, vertice in self._vertices.items():
+            if len(vertice.arestas) > 0:
+                v = vertice
+                break
+        if v is None:
+            return
+
+        r, ciclo = self.buscar_subciclo_euleriano(v, C)
+        if r is False:
+            return (False, None)
+        else:
+            for aresta in self._arestas:
+                if C[(aresta.u, aresta.v)] is False:
+                    return (False, None)
+        
+        return (r, ciclo)
+
+    
+    def buscar_subciclo_euleriano(self, v: Vertice, C):
+        ciclo = [v.index]
+        def existe_aresta_nao_visitada(C):
+            for u in v.arestas:
+                if C[(u, v.index)] is False:
+                    return True
+            return False
+
+        t = v
+        while True:
+
+            if not existe_aresta_nao_visitada(C):
+                return (False, None)
+            else:
+                aresta_selecionada = None
+                for u in v.arestas:
+                    if C[(u, v.index)] is False:
+                        aresta_selecionada = (u, v.index)
+                        break
+                C[aresta_selecionada] = True
+                C[(aresta_selecionada[1], aresta_selecionada[0])] = True
+                v = self._vertices[aresta_selecionada[0]]
+                ciclo.append(v.index)
+
+            if t is v:
+                break
+
+        # Para todo vértice x no Ciclo que tenha uma aresta adjacente não
+        # visitada.
+        xs = []
+        for u in ciclo:
+            vertice = self._vertices[u]
+            for u in vertice.arestas:
+                if C[(u, vertice.index)] is False:
+                    xs.append(u)
+        
+        for x in xs:
+            r, subciclo = self.buscar_subciclo_euleriano(self._vertices[x], C)
+            if r is False:
+                return (False, None)
+            
+            index_x = ciclo.index(x)
+            ciclo.pop(x)
+            novo_ciclo = []
+            for u in ciclo:
+                if ciclo.index(u) != index_x:
+                    novo_ciclo.append(u)
+                else:
+                    for t in subciclo:
+                        novo_ciclo.append(t)
+                    novo_ciclo.append(u)
+        
+        return (True, ciclo)
+            
+
+
