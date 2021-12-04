@@ -1,3 +1,5 @@
+import math
+
 from typing import List, Callable, Dict, Tuple
 from aresta import Aresta
 from vertice import Vertice
@@ -19,6 +21,16 @@ class Grafo:
                     arestas_do_vertice.append(aresta)
             
             self._vertices[index] = Vertice(index, rotulo, arestas_do_vertice)
+
+    @property
+    def vertices(self) -> List[Vertice]:
+        vertices = []
+        for v in self._vertices.values():
+            vertices.append(v)
+        return vertices
+    
+    def get_vertice(self, index: str) -> Vertice:
+        return self._vertices.get(index)
     
     def qtdVertices(self) -> int:
         return len(self._vertices)
@@ -108,30 +120,27 @@ class Grafo:
             level += 1
         return levels
 
-    # def ciclo_euleriano(self):
-    #     C = {}
-    #     for aresta in self._arestas:
-    #         c[aresta] = False
+    def bellman_ford(self, v: Vertice):
+        D = {}
+        A = {}
+        for u in self._vertices.keys():
+            D[u] = math.inf
+            A[u] = None
+        D[v.index] = 0
+
+        for i in range(1, len(self._vertices)):
+            for aresta in self._arestas:
+                if D[aresta.v] > D[aresta.u] + aresta.peso:
+                    D[aresta.v] = D[aresta.u] + aresta.peso
+                    A[aresta.v] = aresta.u
+                if D[aresta.u] > D[aresta.v] + aresta.peso:
+                    D[aresta.u] = D[aresta.v] + aresta.peso
+                    A[aresta.u] = aresta.v
+
+        for aresta in self._arestas:
+            if D[aresta.v] > D[aresta.u] + aresta.peso:
+                return (False, None, None)
+            if D[aresta.u] > D[aresta.v] + aresta.peso:
+                return (False, None, None)
         
-    #     vertice = self._vertices[self._vertices.keys()[0]]
-    #     r, ciclo = self.busca_subciclo_euleriano(vertice, C)
-    #     if r is False:
-    #         return (False, 0)
-    #     else:
-    #         for aresta in self._arestas:
-    #             if C[aresta] is False:
-    #                 return (False, 0)
-
-    #     return (True, ciclo)
-
-    # def busca_subciclo_euleriano(self, vertice, C):
-    #     ciclo = [vertice]
-    #     t = vertice
-    #     v = vertice
-
-    #     def existe_vizinho_nao_visitado(v):
-    #         existe = False
-    #         for key in v.keys():
-    #             if key != 'rotulo':
-    #                 C[(v)]
-    #     while v is not t:
+        return (True, D, A)
