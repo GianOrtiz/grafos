@@ -169,6 +169,25 @@ class Grafo:
         
         return (r, ciclo)
 
+    def floyd_warshal(self):
+        D = [[math.inf for j in range(len(self._vertices))] for i in range(len(self._vertices))]
+        for i in range(1, len(self._vertices)+1):
+            for j in range(1, len(self._vertices)+1):
+                if i != j:
+                    if self._vertices[str(i)].arestas.get(str(j)) is None:
+                        D[i-1][j-1] = math.inf
+                    else: 
+                        D[i-1][j-1] = self._vertices[str(i)].arestas[str(j)].peso
+                else:
+                    D[i-1][j-1] = 0
+        
+        for k in range(1, len(self._vertices)+1):
+            for i in range(1, len(self._vertices)+1):
+                for j in range(1, len(self._vertices)+1):
+                    D[i-1][j-1] = min(D[i-1][j-1], D[i-1][k-1] + D[k-1][j-1])
+        
+        return D
+
     
     def buscar_subciclo_euleriano(self, v: Vertice, C):
         ciclo = [v.index]
@@ -223,6 +242,3 @@ class Grafo:
                     novo_ciclo.append(u)
         
         return (True, ciclo)
-            
-
-
